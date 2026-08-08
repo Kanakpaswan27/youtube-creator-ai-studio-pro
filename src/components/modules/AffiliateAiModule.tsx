@@ -23,6 +23,7 @@ import {
   ShieldCheck,
   CheckCircle2,
 } from 'lucide-react';
+import { useCreator } from '../../context/CreatorContext';
 
 interface GeneratedAffiliateLink {
   platform: 'Amazon' | 'Flipkart' | 'Meesho';
@@ -39,6 +40,7 @@ interface GeneratedAffiliateLink {
 }
 
 export const AffiliateAiModule: React.FC<{ onBackToDashboard?: () => void }> = () => {
+  const { addActivity, incrementStats, showToast, runPipeline } = useCreator();
   // Form Inputs
   const [amazonUrl, setAmazonUrl] = useState<string>(
     'https://www.amazon.in/dp/B0CX23GF43?th=1'
@@ -106,9 +108,8 @@ export const AffiliateAiModule: React.FC<{ onBackToDashboard?: () => void }> = (
 
   const handleGenerateAffiliateLinks = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsGenerating(true);
 
-    setTimeout(() => {
+    runPipeline('Affiliate AI', 'Generating Affiliate Suite & Commission Analysis', () => {
       const tag = affiliateTag.trim() || 'affiliate-21';
       const cmp = campaignName.trim() || 'yt_campaign';
 
@@ -166,9 +167,19 @@ export const AffiliateAiModule: React.FC<{ onBackToDashboard?: () => void }> = (
       }
 
       setGeneratedLinks(results);
-      setIsGenerating(false);
-    }, 700);
+
+      addActivity({
+        type: 'affiliate',
+        title: '✓ Affiliate Links Generated',
+        description: `Created ${results.length} multi-store short links with tag "${tag}".`,
+        status: 'completed',
+        aiBadge: 'Monetization v2.1',
+      });
+      incrementStats(1, 1.0, 2);
+      showToast(`✓ Created ${results.length} multi-store affiliate links!`, 'success');
+    });
   };
+
 
   const handleCopyAllLinksText = () => {
     const formatted = generatedLinks

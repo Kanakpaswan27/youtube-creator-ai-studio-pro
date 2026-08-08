@@ -41,6 +41,7 @@ import {
   Scatter,
   ZAxis,
 } from 'recharts';
+import { useCreator } from '../../context/CreatorContext';
 
 interface SeoKeyword {
   id: string;
@@ -166,6 +167,7 @@ const INITIAL_TAGS = [
 const HASHTAGS = ['#AICoding', '#FullStackApp', '#BuildWithAI', '#GeminiAI', '#WebDev2026', '#DeveloperTools'];
 
 export const SeoAiModule: React.FC<{ onBackToDashboard?: () => void }> = () => {
+  const { addActivity, incrementStats, showToast, runPipeline } = useCreator();
   const [topic, setTopic] = useState<string>('Building Full-Stack AI Apps in 2026 with Gemini');
   const [category, setCategory] = useState<string>('Artificial Intelligence & Coding');
   const [audience, setAudience] = useState<string>('Junior & Senior Developers');
@@ -212,121 +214,106 @@ export const SeoAiModule: React.FC<{ onBackToDashboard?: () => void }> = () => {
     e.preventDefault();
     if (!topic.trim()) return;
 
-    setIsGenerating(true);
-    setProgress(0);
+    runPipeline('SEO AI', `Generating SEO Keywords for "${topic}"`, () => {
+      // Generate customized keyword list based on topic
+      const topicClean = topic.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+      const words = topicClean.split(' ').filter((w) => w.length > 2);
+      const mainWord = words[0] || 'ai app';
 
-    const msgs = [
-      'Scraping YouTube Search API & Trending Metrics...',
-      'Extracting 20 high-volume, low-competition keywords...',
-      'Synthesizing viral titles with high predicted CTR...',
-      'Formulating high-converting description hooks & tag strings...',
-    ];
+      const newKws: SeoKeyword[] = [
+        { id: `kw-gen-1`, keyword: `${topicClean} tutorial 2026`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 19, trendingScore: 99, monthlyVolume: '92,000' },
+        { id: `kw-gen-2`, keyword: `how to ${mainWord} step by step`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 23, trendingScore: 96, monthlyVolume: '78,400' },
+        { id: `kw-gen-3`, keyword: `best ${mainWord} strategy for ${audience.toLowerCase()}`, difficulty: 'Medium', searchIntent: 'Informational', competitionScore: 38, trendingScore: 94, monthlyVolume: '64,100' },
+        { id: `kw-gen-4`, keyword: `complete ${mainWord} masterclass 2026`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 21, trendingScore: 97, monthlyVolume: '88,000' },
+        { id: `kw-gen-5`, keyword: `${mainWord} zero to hero guide`, difficulty: 'Medium', searchIntent: 'How-To', competitionScore: 44, trendingScore: 91, monthlyVolume: '105,000' },
+        { id: `kw-gen-6`, keyword: `top 5 ${mainWord} secrets revealed`, difficulty: 'Low', searchIntent: 'High-CPM', competitionScore: 27, trendingScore: 93, monthlyVolume: '53,200' },
+        { id: `kw-gen-7`, keyword: `fastest way to ${mainWord}`, difficulty: 'Medium', searchIntent: 'How-To', competitionScore: 35, trendingScore: 90, monthlyVolume: '112,000' },
+        { id: `kw-gen-8`, keyword: `${mainWord} vs traditional methods`, difficulty: 'Medium', searchIntent: 'Comparison', competitionScore: 49, trendingScore: 89, monthlyVolume: '48,900' },
+        { id: `kw-gen-9`, keyword: `monetize ${mainWord} in 2026`, difficulty: 'High', searchIntent: 'High-CPM', competitionScore: 71, trendingScore: 95, monthlyVolume: '130,000' },
+        { id: `kw-gen-10`, keyword: `free ${mainWord} tools and workflow`, difficulty: 'Low', searchIntent: 'Transactional', competitionScore: 18, trendingScore: 88, monthlyVolume: '41,000' },
+        { id: `kw-gen-11`, keyword: `${topicClean} for beginners`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 25, trendingScore: 92, monthlyVolume: '96,000' },
+        { id: `kw-gen-12`, keyword: `${mainWord} automated pipeline setup`, difficulty: 'Medium', searchIntent: 'How-To', competitionScore: 32, trendingScore: 87, monthlyVolume: '39,500' },
+        { id: `kw-gen-13`, keyword: `why ${mainWord} is trending now`, difficulty: 'Low', searchIntent: 'Informational', competitionScore: 20, trendingScore: 98, monthlyVolume: '67,000' },
+        { id: `kw-gen-14`, keyword: `${mainWord} case study $10k result`, difficulty: 'Medium', searchIntent: 'High-CPM', competitionScore: 41, trendingScore: 94, monthlyVolume: '84,200' },
+        { id: `kw-gen-15`, keyword: `build ${mainWord} in 15 minutes`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 16, trendingScore: 96, monthlyVolume: '72,100' },
+        { id: `kw-gen-16`, keyword: `essential ${mainWord} checklist 2026`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 22, trendingScore: 85, monthlyVolume: '33,000' },
+        { id: `kw-gen-17`, keyword: `${mainWord} viral growth hacks`, difficulty: 'High', searchIntent: 'High-CPM', competitionScore: 68, trendingScore: 91, monthlyVolume: '115,000' },
+        { id: `kw-gen-18`, keyword: `common ${mainWord} mistakes to avoid`, difficulty: 'Medium', searchIntent: 'Informational', competitionScore: 39, trendingScore: 86, monthlyVolume: '58,400' },
+        { id: `kw-gen-19`, keyword: `production ready ${mainWord} demo`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 28, trendingScore: 89, monthlyVolume: '45,600' },
+        { id: `kw-gen-20`, keyword: `future roadmap for ${mainWord}`, difficulty: 'Extreme', searchIntent: 'Informational', competitionScore: 91, trendingScore: 93, monthlyVolume: '280,000' },
+      ];
 
-    let currentStep = 0;
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + 4;
-        if (next >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            // Generate customized keyword list based on topic
-            const topicClean = topic.toLowerCase().replace(/[^a-z0-9 ]/g, '');
-            const words = topicClean.split(' ').filter((w) => w.length > 2);
-            const mainWord = words[0] || 'ai app';
+      const newTitles: ViralTitle[] = [
+        { id: 't-g1', title: `I Tested ${topic} (The 2026 Results Surprised Everyone!)`, ctrScore: 99, angle: '🔥 Viral Curiosity' },
+        { id: 't-g2', title: `How to Master ${topic} Step-by-Step (Full 2026 Blueprint)`, ctrScore: 97, angle: '🎓 Complete Guide' },
+        { id: 't-g3', title: `STOP Doing ${topic} Wrong! Use THIS Secret Method Instead`, ctrScore: 96, angle: '🚨 Urgent Warning' },
+        { id: 't-g4', title: `From Scratch to Production: ${topic} in 15 Minutes!`, ctrScore: 95, angle: '⚡ Speed & Ease' },
+        { id: 't-g5', title: `The $10,000/Mo ${topic} Framework Nobody Is Talking About`, ctrScore: 94, angle: '💰 High Value Outcome' },
+        { id: 't-g6', title: `Is ${topic} Still Worth It in 2026? (Honest Review)`, ctrScore: 92, angle: '⚖️ Truth & Breakdown' },
+        { id: 't-g7', title: `5 Fatal Mistakes Everyone Makes With ${topic}`, ctrScore: 91, angle: '⚠️ Mistake Prevention' },
+        { id: 't-g8', title: `Building the Ultimate ${topic} System (Live Coding)`, ctrScore: 90, angle: '🛠️ Hands-On Build' },
+        { id: 't-g9', title: `Why Top Developers Are Switching To ${topic}`, ctrScore: 89, angle: '📈 Industry Shift' },
+        { id: 't-g10', title: `The Future of ${topic}: What You Need to Know`, ctrScore: 88, angle: '🔮 Visionary Outlook' },
+      ];
 
-            const newKws: SeoKeyword[] = [
-              { id: `kw-gen-1`, keyword: `${topicClean} tutorial 2026`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 19, trendingScore: 99, monthlyVolume: '92,000' },
-              { id: `kw-gen-2`, keyword: `how to ${mainWord} step by step`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 23, trendingScore: 96, monthlyVolume: '78,400' },
-              { id: `kw-gen-3`, keyword: `best ${mainWord} strategy for ${audience.toLowerCase()}`, difficulty: 'Medium', searchIntent: 'Informational', competitionScore: 38, trendingScore: 94, monthlyVolume: '64,100' },
-              { id: `kw-gen-4`, keyword: `complete ${mainWord} masterclass 2026`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 21, trendingScore: 97, monthlyVolume: '88,000' },
-              { id: `kw-gen-5`, keyword: `${mainWord} zero to hero guide`, difficulty: 'Medium', searchIntent: 'How-To', competitionScore: 44, trendingScore: 91, monthlyVolume: '105,000' },
-              { id: `kw-gen-6`, keyword: `top 5 ${mainWord} secrets revealed`, difficulty: 'Low', searchIntent: 'High-CPM', competitionScore: 27, trendingScore: 93, monthlyVolume: '53,200' },
-              { id: `kw-gen-7`, keyword: `fastest way to ${mainWord}`, difficulty: 'Medium', searchIntent: 'How-To', competitionScore: 35, trendingScore: 90, monthlyVolume: '112,000' },
-              { id: `kw-gen-8`, keyword: `${mainWord} vs traditional methods`, difficulty: 'Medium', searchIntent: 'Comparison', competitionScore: 49, trendingScore: 89, monthlyVolume: '48,900' },
-              { id: `kw-gen-9`, keyword: `monetize ${mainWord} in 2026`, difficulty: 'High', searchIntent: 'High-CPM', competitionScore: 71, trendingScore: 95, monthlyVolume: '130,000' },
-              { id: `kw-gen-10`, keyword: `free ${mainWord} tools and workflow`, difficulty: 'Low', searchIntent: 'Transactional', competitionScore: 18, trendingScore: 88, monthlyVolume: '41,000' },
-              { id: `kw-gen-11`, keyword: `${topicClean} for beginners`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 25, trendingScore: 92, monthlyVolume: '96,000' },
-              { id: `kw-gen-12`, keyword: `${mainWord} automated pipeline setup`, difficulty: 'Medium', searchIntent: 'How-To', competitionScore: 32, trendingScore: 87, monthlyVolume: '39,500' },
-              { id: `kw-gen-13`, keyword: `why ${mainWord} is trending now`, difficulty: 'Low', searchIntent: 'Informational', competitionScore: 20, trendingScore: 98, monthlyVolume: '67,000' },
-              { id: `kw-gen-14`, keyword: `${mainWord} case study $10k result`, difficulty: 'Medium', searchIntent: 'High-CPM', competitionScore: 41, trendingScore: 94, monthlyVolume: '84,200' },
-              { id: `kw-gen-15`, keyword: `build ${mainWord} in 15 minutes`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 16, trendingScore: 96, monthlyVolume: '72,100' },
-              { id: `kw-gen-16`, keyword: `essential ${mainWord} checklist 2026`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 22, trendingScore: 85, monthlyVolume: '33,000' },
-              { id: `kw-gen-17`, keyword: `${mainWord} viral growth hacks`, difficulty: 'High', searchIntent: 'High-CPM', competitionScore: 68, trendingScore: 91, monthlyVolume: '115,000' },
-              { id: `kw-gen-18`, keyword: `common ${mainWord} mistakes to avoid`, difficulty: 'Medium', searchIntent: 'Informational', competitionScore: 39, trendingScore: 86, monthlyVolume: '58,400' },
-              { id: `kw-gen-19`, keyword: `production ready ${mainWord} demo`, difficulty: 'Low', searchIntent: 'How-To', competitionScore: 28, trendingScore: 89, monthlyVolume: '45,600' },
-              { id: `kw-gen-20`, keyword: `future roadmap for ${mainWord}`, difficulty: 'Extreme', searchIntent: 'Informational', competitionScore: 91, trendingScore: 93, monthlyVolume: '280,000' },
-            ];
+      const newHooks: DescriptionHook[] = [
+        {
+          id: 'h-g1',
+          hook: `🚀 Are you looking to master ${topic}? In this video, we break down the exact step-by-step strategy for ${audience.toLowerCase()} to get 10X faster results!`,
+          focusKeyword: `${topicClean} tutorial 2026`,
+        },
+        {
+          id: 'h-g2',
+          hook: `🔥 Software engineering and content strategy are evolving rapidly. Watch this complete 2026 breakdown covering ${topic} with live hands-on examples.`,
+          focusKeyword: `complete ${mainWord} masterclass 2026`,
+        },
+        {
+          id: 'h-g3',
+          hook: `💡 Stop spending hours guessing! Learn the high-CPM keywords, search intent hacks, and viral title formulas designed specifically for ${category}.`,
+          focusKeyword: `monetize ${mainWord} in 2026`,
+        },
+        {
+          id: 'h-g4',
+          hook: `⚡ From zero setup to production ready: See how top creators use ${topic} to maximize YouTube CTR and dominate search traffic.`,
+          focusKeyword: `how to ${mainWord} step by step`,
+        },
+        {
+          id: 'h-g5',
+          hook: `🎓 Discover the 5 most common mistakes creators make with ${topic} and how to implement the high-converting blueprint today.`,
+          focusKeyword: `common ${mainWord} mistakes to avoid`,
+        },
+      ];
 
-            const newTitles: ViralTitle[] = [
-              { id: 't-g1', title: `I Tested ${topic} (The 2026 Results Surprised Everyone!)`, ctrScore: 99, angle: '🔥 Viral Curiosity' },
-              { id: 't-g2', title: `How to Master ${topic} Step-by-Step (Full 2026 Blueprint)`, ctrScore: 97, angle: '🎓 Complete Guide' },
-              { id: 't-g3', title: `STOP Doing ${topic} Wrong! Use THIS Secret Method Instead`, ctrScore: 96, angle: '🚨 Urgent Warning' },
-              { id: 't-g4', title: `From Scratch to Production: ${topic} in 15 Minutes!`, ctrScore: 95, angle: '⚡ Speed & Ease' },
-              { id: 't-g5', title: `The $10,000/Mo ${topic} Framework Nobody Is Talking About`, ctrScore: 94, angle: '💰 High Value Outcome' },
-              { id: 't-g6', title: `Is ${topic} Still Worth It in 2026? (Honest Review)`, ctrScore: 92, angle: '⚖️ Truth & Breakdown' },
-              { id: 't-g7', title: `5 Fatal Mistakes Everyone Makes With ${topic}`, ctrScore: 91, angle: '⚠️ Mistake Prevention' },
-              { id: 't-g8', title: `Building the Ultimate ${topic} System (Live Coding)`, ctrScore: 90, angle: '🛠️ Hands-On Build' },
-              { id: 't-g9', title: `Why Top Developers Are Switching To ${topic}`, ctrScore: 89, angle: '📈 Industry Shift' },
-              { id: 't-g10', title: `The Future of ${topic}: What You Need to Know`, ctrScore: 88, angle: '🔮 Visionary Outlook' },
-            ];
+      const newTags = [
+        `${topicClean} 2026`,
+        `how to ${mainWord}`,
+        `${mainWord} tutorial`,
+        `${mainWord} step by step`,
+        `${topicClean} guide`,
+        `best ${mainWord} tools`,
+        `monetize ${mainWord}`,
+        `${mainWord} for ${audience.toLowerCase()}`,
+        `high cpm ${mainWord}`,
+        `${mainWord} masterclass`,
+        `${mainWord} tips 2026`,
+        `viral ${mainWord} hacks`,
+      ];
 
-            const newHooks: DescriptionHook[] = [
-              {
-                id: 'h-g1',
-                hook: `🚀 Are you looking to master ${topic}? In this video, we break down the exact step-by-step strategy for ${audience.toLowerCase()} to get 10X faster results!`,
-                focusKeyword: `${topicClean} tutorial 2026`,
-              },
-              {
-                id: 'h-g2',
-                hook: `🔥 Software engineering and content strategy are evolving rapidly. Watch this complete 2026 breakdown covering ${topic} with live hands-on examples.`,
-                focusKeyword: `complete ${mainWord} masterclass 2026`,
-              },
-              {
-                id: 'h-g3',
-                hook: `💡 Stop spending hours guessing! Learn the high-CPM keywords, search intent hacks, and viral title formulas designed specifically for ${category}.`,
-                focusKeyword: `monetize ${mainWord} in 2026`,
-              },
-              {
-                id: 'h-g4',
-                hook: `⚡ From zero setup to production ready: See how top creators use ${topic} to maximize YouTube CTR and dominate search traffic.`,
-                focusKeyword: `how to ${mainWord} step by step`,
-              },
-              {
-                id: 'h-g5',
-                hook: `🎓 Discover the 5 most common mistakes creators make with ${topic} and how to implement the high-converting blueprint today.`,
-                focusKeyword: `common ${mainWord} mistakes to avoid`,
-              },
-            ];
+      setKeywords(newKws);
+      setTitles(newTitles);
+      setHooks(newHooks);
+      setTags(newTags);
 
-            const newTags = [
-              `${topicClean} 2026`,
-              `how to ${mainWord}`,
-              `${mainWord} tutorial`,
-              `${mainWord} step by step`,
-              `${topicClean} guide`,
-              `best ${mainWord} tools`,
-              `monetize ${mainWord}`,
-              `${mainWord} for ${audience.toLowerCase()}`,
-              `high cpm ${mainWord}`,
-              `${mainWord} masterclass`,
-              `${mainWord} tips 2026`,
-              `viral ${mainWord} hacks`,
-            ];
-
-            setKeywords(newKws);
-            setTitles(newTitles);
-            setHooks(newHooks);
-            setTags(newTags);
-            setIsGenerating(false);
-          }, 500);
-          return 100;
-        }
-
-        const msgIdx = Math.min(3, Math.floor(next / 25));
-        setProgressMsg(msgs[msgIdx]);
-        return next;
+      addActivity({
+        type: 'seo',
+        title: '✓ 20 SEO Keywords & Suite Synthesized',
+        description: `Generated 20 keywords, 10 titles, and description hooks for "${topic}".`,
+        status: 'completed',
+        aiBadge: 'Search Grounding v2.5',
       });
-    }, 60);
+      incrementStats(1, 2.0, 3);
+      showToast(`✓ Generated 20 SEO Keywords & Viral Suite for "${topic}"!`, 'success');
+    });
   };
 
   // Filter & Sort Keywords

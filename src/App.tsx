@@ -4,12 +4,15 @@ import { Sidebar } from './components/Sidebar';
 import { SidebarTab } from './types/dashboard';
 import { AiStatusCard } from './components/dashboard/AiStatusCard';
 import { CreatorOverview } from './components/dashboard/CreatorOverview';
+import { CreatorProductivityCard } from './components/dashboard/CreatorProductivityCard';
 import { AnalyticsCards } from './components/dashboard/AnalyticsCards';
 import { WorkflowTimeline } from './components/dashboard/WorkflowTimeline';
 import { RecentProjects } from './components/dashboard/RecentProjects';
 import { ActivityFeed } from './components/dashboard/ActivityFeed';
 import { ModuleView } from './components/views/ModuleView';
 import { CreatorProvider } from './context/CreatorContext';
+import { ToastContainer } from './components/common/ToastContainer';
+import { AiPipelineOverlay } from './components/common/AiPipelineOverlay';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<SidebarTab>('dashboard');
@@ -18,7 +21,13 @@ export default function App() {
 
   return (
     <CreatorProvider>
-      <div className="min-h-screen bg-[#0F0F0F] text-[#F1F1F1] font-sans antialiased selection:bg-red-600 selection:text-white flex flex-col">
+      <div className="min-h-screen bg-[#0F0F0F] text-[#F1F1F1] font-sans antialiased selection:bg-red-600 selection:text-white flex flex-col relative">
+        {/* Toast Notification Container */}
+        <ToastContainer />
+
+        {/* AI Pipeline Processing Overlay */}
+        <AiPipelineOverlay />
+
         {/* Sticky Top Header */}
         <Header
           searchQuery={searchQuery}
@@ -47,27 +56,32 @@ export default function App() {
                     <AiStatusCard />
                   </section>
 
-                  {/* 2. Creator Overview */}
+                  {/* 2. Creator Productivity Summary Card */}
+                  <section id="creator-productivity">
+                    <CreatorProductivityCard />
+                  </section>
+
+                  {/* 3. Creator Overview */}
                   <section id="creator-overview">
                     <CreatorOverview />
                   </section>
 
-                  {/* 3. Analytics Cards */}
+                  {/* 4. Analytics Cards */}
                   <section id="analytics-cards">
                     <AnalyticsCards />
                   </section>
 
-                  {/* 4. Workflow Timeline */}
+                  {/* 5. Workflow Timeline */}
                   <section id="workflow-timeline">
                     <WorkflowTimeline />
                   </section>
 
-                  {/* 5. Recent Projects */}
+                  {/* 6. Recent Projects */}
                   <section id="recent-projects">
                     <RecentProjects />
                   </section>
 
-                  {/* 6. Activity Feed */}
+                  {/* 7. Activity Feed */}
                   <section id="activity-feed">
                     <ActivityFeed />
                   </section>
@@ -77,6 +91,7 @@ export default function App() {
                 <ModuleView
                   tab={activeTab}
                   onBackToDashboard={() => setActiveTab('dashboard')}
+                  onNavigateTab={(tab) => setActiveTab(tab)}
                 />
               )}
             </div>
@@ -86,3 +101,4 @@ export default function App() {
     </CreatorProvider>
   );
 }
+

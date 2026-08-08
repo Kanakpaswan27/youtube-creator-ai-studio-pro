@@ -22,27 +22,40 @@ import { SeoAiModule } from '../modules/SeoAiModule';
 import { AffiliateAiModule } from '../modules/AffiliateAiModule';
 import { VideoExportModule } from '../modules/VideoExportModule';
 import { SettingsModule } from '../modules/SettingsModule';
+import { MultiAgentPipelineNav } from '../common/MultiAgentPipelineNav';
 
 interface ModuleViewProps {
   tab: SidebarTab;
   onBackToDashboard: () => void;
+  onNavigateTab?: (tab: SidebarTab) => void;
 }
 
 export const ModuleView: React.FC<ModuleViewProps> = ({
   tab,
   onBackToDashboard,
+  onNavigateTab,
 }) => {
+  const handleNavigateTab = (newTab: SidebarTab) => {
+    if (onNavigateTab) {
+      onNavigateTab(newTab);
+    }
+  };
+
   // Directly render Channel AI functional module when tab is 'channel-ai'
   if (tab === 'channel-ai') {
     return (
       <div className="space-y-6">
-        <button
-          onClick={onBackToDashboard}
-          className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4 text-red-500" />
-          <span>Back to Main Dashboard</span>
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={onBackToDashboard}
+            className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4 text-red-500" />
+            <span>Back to Main Dashboard</span>
+          </button>
+        </div>
+
+        <MultiAgentPipelineNav currentTab={tab} onNavigateTab={handleNavigateTab} />
 
         <ChannelAiModule onBackToDashboard={onBackToDashboard} />
       </div>
@@ -53,13 +66,17 @@ export const ModuleView: React.FC<ModuleViewProps> = ({
   if (tab === 'script-ai') {
     return (
       <div className="space-y-6">
-        <button
-          onClick={onBackToDashboard}
-          className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4 text-red-500" />
-          <span>Back to Main Dashboard</span>
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={onBackToDashboard}
+            className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4 text-red-500" />
+            <span>Back to Main Dashboard</span>
+          </button>
+        </div>
+
+        <MultiAgentPipelineNav currentTab={tab} onNavigateTab={handleNavigateTab} />
 
         <ScriptAiModule onBackToDashboard={onBackToDashboard} />
       </div>
@@ -70,13 +87,17 @@ export const ModuleView: React.FC<ModuleViewProps> = ({
   if (tab === 'thumbnail-ai') {
     return (
       <div className="space-y-6">
-        <button
-          onClick={onBackToDashboard}
-          className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4 text-red-500" />
-          <span>Back to Main Dashboard</span>
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={onBackToDashboard}
+            className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4 text-red-500" />
+            <span>Back to Main Dashboard</span>
+          </button>
+        </div>
+
+        <MultiAgentPipelineNav currentTab={tab} onNavigateTab={handleNavigateTab} />
 
         <ThumbnailAiModule onBackToDashboard={onBackToDashboard} />
       </div>
@@ -87,13 +108,17 @@ export const ModuleView: React.FC<ModuleViewProps> = ({
   if (tab === 'seo-ai') {
     return (
       <div className="space-y-6">
-        <button
-          onClick={onBackToDashboard}
-          className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4 text-red-500" />
-          <span>Back to Main Dashboard</span>
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={onBackToDashboard}
+            className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4 text-red-500" />
+            <span>Back to Main Dashboard</span>
+          </button>
+        </div>
+
+        <MultiAgentPipelineNav currentTab={tab} onNavigateTab={handleNavigateTab} />
 
         <SeoAiModule onBackToDashboard={onBackToDashboard} />
       </div>
@@ -104,13 +129,17 @@ export const ModuleView: React.FC<ModuleViewProps> = ({
   if (tab === 'affiliate-ai') {
     return (
       <div className="space-y-6">
-        <button
-          onClick={onBackToDashboard}
-          className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4 text-red-500" />
-          <span>Back to Main Dashboard</span>
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={onBackToDashboard}
+            className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4 text-red-500" />
+            <span>Back to Main Dashboard</span>
+          </button>
+        </div>
+
+        <MultiAgentPipelineNav currentTab={tab} onNavigateTab={handleNavigateTab} />
 
         <AffiliateAiModule onBackToDashboard={onBackToDashboard} />
       </div>
@@ -121,13 +150,17 @@ export const ModuleView: React.FC<ModuleViewProps> = ({
   if (tab === 'video-export') {
     return (
       <div className="space-y-6">
-        <button
-          onClick={onBackToDashboard}
-          className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4 text-red-500" />
-          <span>Back to Main Dashboard</span>
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={onBackToDashboard}
+            className="px-3.5 py-2 rounded-xl bg-[#181818] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4 text-red-500" />
+            <span>Back to Main Dashboard</span>
+          </button>
+        </div>
+
+        <MultiAgentPipelineNav currentTab={tab} onNavigateTab={handleNavigateTab} />
 
         <VideoExportModule onBackToDashboard={onBackToDashboard} />
       </div>

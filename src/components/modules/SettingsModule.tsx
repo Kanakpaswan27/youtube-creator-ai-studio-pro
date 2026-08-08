@@ -65,6 +65,7 @@ export const SettingsModule: React.FC<{ onBackToDashboard?: () => void }> = () =
     | 'appearance'
     | 'notifications'
     | 'privacy'
+    | 'build-info'
     | 'about'
   >('profile');
 
@@ -314,7 +315,8 @@ export const SettingsModule: React.FC<{ onBackToDashboard?: () => void }> = () =
     { id: 'appearance', label: '5. Appearance', icon: Palette },
     { id: 'notifications', label: '6. Notifications', icon: Bell },
     { id: 'privacy', label: '7. Privacy & Security', icon: ShieldCheck },
-    { id: 'about', label: '8. About CreatorOS', icon: Info },
+    { id: 'build-info', label: '8. Build & Tech Stack', icon: FileCode },
+    { id: 'about', label: '9. About CreatorOS', icon: Info },
   ] as const;
 
   return (
@@ -1316,7 +1318,100 @@ export const SettingsModule: React.FC<{ onBackToDashboard?: () => void }> = () =
             </div>
           )}
 
-          {/* SECTION 8: ABOUT */}
+          {/* SECTION 8: BUILD INFORMATION */}
+          {activeSection === 'build-info' && (
+            <div className="glass-card rounded-2xl p-6 border border-white/10 space-y-6 animate-in fade-in">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center gap-2.5">
+                  <FileCode className="w-5 h-5 text-red-500" />
+                  <h3 className="text-base font-bold text-white">8. Build Information & Stack Specs</h3>
+                </div>
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                  Production Ready
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Tech 1: React 19 / Vite */}
+                <div className="p-4 rounded-xl bg-zinc-900/80 border border-white/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-cyan-400 font-mono">React 19 & Vite 6</span>
+                    <span className="text-[10px] text-zinc-400 font-mono">Core Runtime</span>
+                  </div>
+                  <p className="text-xs text-zinc-300">
+                    High-performance single page application framework with ultra-fast JSX rendering and state management.
+                  </p>
+                </div>
+
+                {/* Tech 2: TypeScript */}
+                <div className="p-4 rounded-xl bg-zinc-900/80 border border-white/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-blue-400 font-mono">TypeScript 5.7+</span>
+                    <span className="text-[10px] text-zinc-400 font-mono">Type Safety</span>
+                  </div>
+                  <p className="text-xs text-zinc-300">
+                    Strict type safety across multi-agent contexts, live activities, session statistics, and export schemas.
+                  </p>
+                </div>
+
+                {/* Tech 3: Tailwind CSS */}
+                <div className="p-4 rounded-xl bg-zinc-900/80 border border-white/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-teal-400 font-mono">Tailwind CSS v4</span>
+                    <span className="text-[10px] text-zinc-400 font-mono">Aesthetics</span>
+                  </div>
+                  <p className="text-xs text-zinc-300">
+                    YouTube dark-mode interface with glassmorphism, glowing red borders, responsive grids & crisp micro-interactions.
+                  </p>
+                </div>
+
+                {/* Tech 4: Gemini Pro */}
+                <div className="p-4 rounded-xl bg-zinc-900/80 border border-white/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-amber-400 font-mono">Gemini 2.5 Pro</span>
+                    <span className="text-[10px] text-zinc-400 font-mono">Google GenAI SDK</span>
+                  </div>
+                  <p className="text-xs text-zinc-300">
+                    Multimodal LLM orchestrator powering channel scanning, viral script generation, SEO ranking & affiliate match.
+                  </p>
+                </div>
+
+                {/* Tech 5: Pollinations AI */}
+                <div className="p-4 rounded-xl bg-zinc-900/80 border border-white/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-rose-400 font-mono">Pollinations AI</span>
+                    <span className="text-[10px] text-zinc-400 font-mono">Image Generation</span>
+                  </div>
+                  <p className="text-xs text-zinc-300">
+                    Real-time high-contrast 4K thumbnail generation engine with automatic face expressiveness & typography overlay.
+                  </p>
+                </div>
+
+                {/* Tech 6: Lucide Icons */}
+                <div className="p-4 rounded-xl bg-zinc-900/80 border border-white/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-purple-400 font-mono">Lucide Icons</span>
+                    <span className="text-[10px] text-zinc-400 font-mono">UI Vector Assets</span>
+                  </div>
+                  <p className="text-xs text-zinc-300">
+                    Consistent, lightweight vector icons used across the command palette, module navigation, and status badges.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-red-950/20 border border-red-500/30 text-xs text-zinc-300 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-red-500 shrink-0" />
+                  <span>
+                    Architecture Status: <strong className="text-white">Multi-Agent Workflow Engine Active & Fully Synced</strong>
+                  </span>
+                </div>
+                <span className="font-mono text-zinc-400">Build #2026.08.08</span>
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 9: ABOUT */}
           {activeSection === 'about' && (
             <div className="glass-card rounded-2xl p-6 border border-white/10 space-y-6 animate-in fade-in">
               <div className="flex items-center justify-between border-b border-white/10 pb-4">

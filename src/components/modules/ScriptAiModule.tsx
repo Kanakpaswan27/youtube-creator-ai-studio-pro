@@ -27,6 +27,7 @@ import {
   Volume2,
 } from 'lucide-react';
 import { ScriptBlock, ParsedScriptDocument } from '../../types/script';
+import { useCreator } from '../../context/CreatorContext';
 
 const SAMPLE_SCRIPTS = [
   {
@@ -68,6 +69,7 @@ Download our free Creator Script AI template linked below and subscribe for next
 ];
 
 export const ScriptAiModule: React.FC<{ onBackToDashboard?: () => void }> = () => {
+  const { addActivity, incrementStats, showToast, runPipeline } = useCreator();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [pastedText, setPastedText] = useState<string>('');
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -114,36 +116,22 @@ export const ScriptAiModule: React.FC<{ onBackToDashboard?: () => void }> = () =
 
   // Process Script Execution Simulation
   const runScriptAnalysis = (textToParse: string, filename: string) => {
-    setIsProcessing(true);
-    setProcessingStep(0);
-    setProcessingProgress(0);
+    runPipeline('Script AI', `Synthesizing ${filename}`, () => {
+      const documentResult = generateParsedScript(textToParse, filename);
+      setParsedDoc(documentResult);
 
-    const steps = [
-      'Extracting Raw Script Content & Formatting PDF Streams...',
-      'Segmenting Narrative Arc into Intelligent Content Blocks...',
-      'Analyzing Emotional Tones & Pacing Curves...',
-      'Generating Visual B-roll, Camera Angles & Music Cues...',
-      'Synthesizing Engagement Triggers & Markdown Artifacts...',
-    ];
-
-    const interval = setInterval(() => {
-      setProcessingProgress((prev) => {
-        const next = prev + 2;
-        if (next >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            const documentResult = generateParsedScript(textToParse, filename);
-            setParsedDoc(documentResult);
-            setIsProcessing(false);
-          }, 500);
-          return 100;
-        }
-        const currentStep = Math.min(4, Math.floor(next / 20));
-        setProcessingStep(currentStep);
-        return next;
+      addActivity({
+        type: 'script',
+        title: '✓ Script & Shot List Synthesized',
+        description: `Parsed ${filename} into ${documentResult.blocks.length} intelligent shot list blocks.`,
+        status: 'completed',
+        aiBadge: 'Script Synth v4.2',
       });
-    }, 60);
+      incrementStats(1, 4.0, 5);
+      showToast(`✓ Script "${filename}" analyzed & shot list generated!`, 'success');
+    });
   };
+
 
   const generateParsedScript = (text: string, filename: string): ParsedScriptDocument => {
     const rawParagraphs = text

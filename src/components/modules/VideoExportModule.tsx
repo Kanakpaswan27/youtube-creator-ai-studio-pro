@@ -26,6 +26,7 @@ import {
   ArrowRight,
   Eye,
 } from 'lucide-react';
+import { useCreator } from '../../context/CreatorContext';
 
 interface ExportData {
   channelProfile: {
@@ -156,12 +157,8 @@ Some links above are affiliate links where we earn a small commission at no addi
 };
 
 export const VideoExportModule: React.FC<{ onBackToDashboard?: () => void }> = () => {
-  const [data, setData] = useState<ExportData>(DEFAULT_PACKAGE_DATA);
+  const { addActivity, incrementStats, showToast, runPipeline, pipeline, pipelineData } = useCreator();
   const [activeFormat, setActiveFormat] = useState<'json' | 'markdown' | 'text' | 'webhook'>('json');
-
-  const [isExporting, setIsExporting] = useState<boolean>(false);
-  const [exportProgress, setExportProgress] = useState<number>(0);
-  const [exportStepMsg, setExportStepMsg] = useState<string>('');
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [webhookSent, setWebhookSent] = useState<boolean>(false);
@@ -169,36 +166,89 @@ export const VideoExportModule: React.FC<{ onBackToDashboard?: () => void }> = (
     'https://hooks.zapier.com/v1/workflows/creator-studio-export'
   );
 
+  // Dynamic state populated from multi-agent pipelineData
+  const exportPackageData: ExportData = {
+    channelProfile: {
+      channelName: pipelineData.channelHandle || '@kanakkumari_tech',
+      subscribers: '1.24M Subscribers',
+      niche: pipelineData.category || 'Tech & Coding',
+      targetAudience: pipelineData.audience || 'Junior & Senior Developers',
+      brandTone: pipelineData.personaArchetype || 'Technical Thought Leader & Builder',
+    },
+    script: {
+      title: pipelineData.viralTitle || pipelineData.scriptTitle || 'Building Full-Stack AI Apps in 2026',
+      duration: '14:20',
+      hook: pipelineData.descriptionHook || '🚀 Are you looking to master Building Full-Stack AI Apps in 2026?',
+      chapters: [
+        { time: '00:00', title: 'The 2026 AI Agent Architecture' },
+        { time: '02:15', title: 'Connecting Gemini Pro Models' },
+        { time: '05:40', title: 'Multi-Agent State Orchestration' },
+        { time: '09:10', title: 'Live Demonstration & Benchmarks' },
+        { time: '12:30', title: 'Final Deployment & Monetization' },
+      ],
+      callToAction: 'Hit subscribe and grab the full CreatorOS AI source code below!',
+    },
+    thumbnail: {
+      prompt: pipelineData.thumbnailPrompt || '4K cinematic octane 3d render of developer working on glowing holographic AI studio screen',
+      style: 'Cinematic Cyberpunk',
+      mood: 'Shocked / Technical',
+      palette: 'Neon Red & Electric Cyan',
+      aspectRatio: '16:9 (3840x2160 4K)',
+      overlayText: pipelineData.thumbnailOverlayText || '100X AGENT!',
+      predictedCtr: pipelineData.predictedCtr || '12.8%',
+    },
+    seo: {
+      focusKeyword: pipelineData.topKeywords?.[0] || 'building full stack ai apps 2026',
+      viralTitle: pipelineData.viralTitle || 'I Tested Building Full-Stack AI Apps in 2026',
+      keywordsCount: pipelineData.topKeywords?.length || 20,
+      keywordsList: pipelineData.topKeywords?.length ? pipelineData.topKeywords : DEFAULT_PACKAGE_DATA.seo.keywordsList,
+      tagsString: pipelineData.tags?.length ? pipelineData.tags.join(', ') : DEFAULT_PACKAGE_DATA.seo.tagsString,
+      searchIntent: 'How-To / High CPM Tech',
+    },
+    affiliateLinks: {
+      amazon: pipelineData.topAffiliateLink || 'https://amzn.to/3xK9pL2_yt_campaign',
+      flipkart: 'https://fkrt.co/creatoros_deal',
+      meesho: 'https://msho.co/creatoros_spec',
+      estRevenue: '₹1,05,000 / video',
+    },
+    description: `🚀 ${pipelineData.viralTitle || pipelineData.scriptTitle}
+
+${pipelineData.descriptionHook || 'In this video, we break down the complete step-by-step strategy.'}
+
+⏱️ CHAPTER TIMESTAMPS:
+00:00 - The 2026 AI Agent Architecture
+02:15 - Connecting Gemini Pro Models
+05:40 - Multi-Agent State Orchestration
+09:10 - Live Demonstration & Benchmarks
+12:30 - Final Deployment & Monetization
+
+🛒 AFFILIATE & MONETIZATION LINKS:
+- 📱 Top Equipment: ${pipelineData.topAffiliateLink || 'https://amzn.to/3xK9pL2_yt_campaign'}
+- 💻 Tech Workspace: https://fkrt.co/creatoros_deal
+- 🛍️ Accessories: https://msho.co/creatoros_spec
+
+🔥 TAGS & KEYWORDS:
+${pipelineData.tags?.map((t) => `#${t.replace(/\s+/g, '')}`).join(' ') || '#AICoding #FullStackAI'}
+
+📊 AI PERFORMANCE SCORE: ${pipelineData.overallScore || 94}/100 Growth Score
+`,
+  };
+
+  const data = exportPackageData;
+
   // Compile / Animate Export Package
   const handleRunExportAnimation = () => {
-    setIsExporting(true);
-    setExportProgress(0);
-
-    const steps = [
-      'Collecting Channel Profile metadata...',
-      'Synthesizing video script & chapters...',
-      'Extracting 4K thumbnail prompts & style configs...',
-      'Bundling 20 SEO keywords, tags & viral title...',
-      'Structuring affiliate links & UTM campaign URL...',
-      'Compiling final multi-format export package...',
-    ];
-
-    let currentStep = 0;
-    const interval = setInterval(() => {
-      setExportProgress((prev) => {
-        const next = prev + 5;
-        if (next >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setIsExporting(false);
-          }, 400);
-          return 100;
-        }
-        const idx = Math.min(5, Math.floor(next / 18));
-        setExportStepMsg(steps[idx]);
-        return next;
+    runPipeline('Video Export', 'Compiling Master Creator Package Bundle', () => {
+      addActivity({
+        type: 'export',
+        title: '✓ Metadata Creator Package Compiled',
+        description: `Bundled Title, Script, Thumbnail Prompts, ${data.seo.keywordsCount} Keywords & ${data.affiliateLinks.amazon}`,
+        status: 'completed',
+        aiBadge: 'Export Engine v3.0',
       });
-    }, 50);
+      incrementStats(1, 2.5, 4);
+      showToast('✓ Consolidated Creator Package ready for YouTube & distribution!', 'success');
+    });
   };
 
   const handleCopyText = (key: string, content: string) => {
@@ -370,32 +420,14 @@ Meesho: ${data.affiliateLinks.meesho}
         <div className="flex items-center gap-2">
           <button
             onClick={handleRunExportAnimation}
-            disabled={isExporting}
+            disabled={!!pipeline?.active}
             className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-extrabold transition flex items-center gap-2 cursor-pointer shadow-lg shadow-purple-900/30 border border-purple-400/30 disabled:opacity-50"
           >
-            <RefreshCw className={`w-4 h-4 ${isExporting ? 'animate-spin' : ''}`} />
-            <span>{isExporting ? 'Re-Compiling...' : 'Re-Compile Export Package'}</span>
+            <RefreshCw className={`w-4 h-4 ${pipeline?.active ? 'animate-spin' : ''}`} />
+            <span>{pipeline?.active ? 'Re-Compiling...' : 'Re-Compile Export Package'}</span>
           </button>
         </div>
       </div>
-
-      {/* EXPORT ANIMATION OVERLAY CARD */}
-      {isExporting && (
-        <div className="glass-card rounded-2xl p-6 border border-purple-500/40 bg-purple-950/20 space-y-3 animate-in fade-in">
-          <div className="flex items-center justify-between text-xs font-mono">
-            <span className="text-purple-300 font-bold flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-400 animate-spin" /> {exportStepMsg}
-            </span>
-            <span className="text-amber-400 font-bold">{exportProgress}%</span>
-          </div>
-          <div className="w-full bg-zinc-950 h-2.5 rounded-full overflow-hidden border border-white/10">
-            <div
-              className="bg-gradient-to-r from-purple-600 via-indigo-500 to-amber-400 h-full rounded-full transition-all duration-100 shadow-[0_0_12px_#A855F7]"
-              style={{ width: `${exportProgress}%` }}
-            ></div>
-          </div>
-        </div>
-      )}
 
       {/* SUMMARY OVERVIEW OF COLLECTED DATA MODULES */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">

@@ -9,13 +9,16 @@ import {
   AlertTriangle,
   CheckCircle2,
   Filter,
+  Tv,
+  Download,
 } from 'lucide-react';
-import { ACTIVITY_FEED } from '../../data/mockDashboardData';
+import { useCreator } from '../../context/CreatorContext';
 
 export const ActivityFeed: React.FC = () => {
+  const { activities } = useCreator();
   const [filter, setFilter] = useState<string>('all');
 
-  const filteredItems = ACTIVITY_FEED.filter((item) => {
+  const filteredItems = activities.filter((item) => {
     if (filter === 'all') return true;
     return item.type === filter;
   });
@@ -30,6 +33,10 @@ export const ActivityFeed: React.FC = () => {
         return Search;
       case 'affiliate':
         return DollarSign;
+      case 'scan':
+        return Tv;
+      case 'export':
+        return Download;
       default:
         return Sparkles;
     }
@@ -42,7 +49,7 @@ export const ActivityFeed: React.FC = () => {
           <div className="flex items-center gap-2">
             <Activity className="w-5 h-5 text-red-500 animate-pulse" />
             <h3 className="font-extrabold text-base text-white tracking-tight">
-              Live AI Autonomous Action Feed
+              Live Activity Timeline
             </h3>
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -50,7 +57,7 @@ export const ActivityFeed: React.FC = () => {
             </span>
           </div>
           <p className="text-xs text-zinc-400 mt-0.5">
-            Real-time activity log from Gemini 2.5 Pro sub-agents optimizing your channel
+            Real-time activity log from Gemini 2.5 Pro sub-agents optimizing your channel workspace
           </p>
         </div>
 
@@ -59,9 +66,11 @@ export const ActivityFeed: React.FC = () => {
           <Filter className="w-3.5 h-3.5 text-zinc-500 ml-1.5" />
           {[
             { id: 'all', label: 'All' },
-            { id: 'thumbnail', label: 'Thumbnails' },
+            { id: 'scan', label: 'Scans' },
             { id: 'script', label: 'Scripts' },
+            { id: 'thumbnail', label: 'Thumbnails' },
             { id: 'seo', label: 'SEO' },
+            { id: 'affiliate', label: 'Affiliate' },
           ].map((f) => (
             <button
               key={f.id}
@@ -123,7 +132,7 @@ export const ActivityFeed: React.FC = () => {
                   </span>
                 ) : (
                   <span className="text-emerald-400 font-bold flex items-center gap-1 mt-1">
-                    <CheckCircle2 className="w-3 h-3" /> Auto-Applied
+                    <CheckCircle2 className="w-3 h-3" /> Live Synced
                   </span>
                 )}
               </div>
@@ -134,3 +143,4 @@ export const ActivityFeed: React.FC = () => {
     </div>
   );
 };
+

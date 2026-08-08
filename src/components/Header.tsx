@@ -143,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({
   setSearchQuery,
   setActiveTab,
 }) => {
-  const { profile, avatarUrl, uploadAvatarFile } = useCreator();
+  const { profile, avatarUrl, uploadAvatarFile, runPipeline } = useCreator();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -195,7 +195,27 @@ export const Header: React.FC<HeaderProps> = ({
     return inTitle || inCategory || inDesc || inKeywords;
   });
 
-  // Handle Keyboard Arrows Navigation inside Palette
+  // Select Module Action with AI Thinking Pipeline
+  const handleSelectModule = (tab: SidebarTab, customTitle?: string) => {
+    const mod = COMMAND_MODULES.find((m) => m.id === tab);
+    const title = customTitle || mod?.title || 'Selected Module';
+
+    setRecentSearches((prev) => [tab, ...prev.filter((t) => t !== tab)].slice(0, 4));
+    setIsOpen(false);
+    setSearchQuery('');
+
+    runPipeline(
+      'AI Assistant Router',
+      `AI Thinking: Processing Intent "${title}" & Routing to Workspace...`,
+      () => {
+        if (setActiveTab) {
+          setActiveTab(tab);
+        }
+      }
+    );
+  };
+
+  // Handle Keyboard Arrows Navigation & Intent Detection inside Palette
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isOpen) return;
 
@@ -209,24 +229,28 @@ export const Header: React.FC<HeaderProps> = ({
       );
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (filteredModules.length > 0 && selectedIndex < filteredModules.length) {
+      const q = queryTrimmed;
+
+      // Natural Language Intent Recognition
+      if (q.includes('create thumbnail') || q.includes('thumbnail')) {
+        handleSelectModule('thumbnail-ai', 'Create Thumbnail Engine');
+      } else if (q.includes('generate seo') || q.includes('seo')) {
+        handleSelectModule('seo-ai', 'Generate SEO Keywords');
+      } else if (q.includes('open affiliate') || q.includes('affiliate')) {
+        handleSelectModule('affiliate-ai', 'Open Affiliate Links');
+      } else if (q.includes('analyze channel') || q.includes('channel')) {
+        handleSelectModule('channel-ai', 'Analyze Channel Profile');
+      } else if (q.includes('export project') || q.includes('export')) {
+        handleSelectModule('video-export', 'Export Project Package');
+      } else if (q.includes('script') || q.includes('description')) {
+        handleSelectModule('script-ai', 'Script & Description Studio');
+      } else if (filteredModules.length > 0 && selectedIndex < filteredModules.length) {
         handleSelectModule(filteredModules[selectedIndex].id);
       }
     } else if (e.key === 'Escape') {
       setIsOpen(false);
       searchInputRef.current?.blur();
     }
-  };
-
-  // Select Module Action
-  const handleSelectModule = (tab: SidebarTab) => {
-    if (setActiveTab) {
-      setActiveTab(tab);
-    }
-    // Track in recent searches
-    setRecentSearches((prev) => [tab, ...prev.filter((t) => t !== tab)].slice(0, 4));
-    setIsOpen(false);
-    setSearchQuery('');
   };
 
   // Close Palette when clicking outside

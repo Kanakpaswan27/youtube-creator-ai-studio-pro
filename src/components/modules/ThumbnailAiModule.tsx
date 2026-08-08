@@ -27,6 +27,7 @@ import {
   Info,
   CheckCircle2,
 } from 'lucide-react';
+import { useCreator } from '../../context/CreatorContext';
 
 interface ThumbnailStyle {
   id: string;
@@ -141,6 +142,7 @@ const DEFAULT_HISTORY: PromptHistoryItem[] = [
 ];
 
 export const ThumbnailAiModule: React.FC<{ onBackToDashboard?: () => void }> = () => {
+  const { addActivity, incrementStats, showToast, runPipeline } = useCreator();
   const [prompt, setPrompt] = useState<string>(
     'Shocked creator pointing at floating holographic Gemini AI code editor, high contrast YouTube thumbnail'
   );
@@ -176,6 +178,7 @@ export const ThumbnailAiModule: React.FC<{ onBackToDashboard?: () => void }> = (
 
       setEnhancedPrompt(enhanced);
       setIsEnhancing(false);
+      showToast('✓ Gemini prompt enhanced with CTR principles!', 'info');
     }, 800);
   };
 
@@ -184,54 +187,39 @@ export const ThumbnailAiModule: React.FC<{ onBackToDashboard?: () => void }> = (
     e.preventDefault();
     if (!prompt.trim()) return;
 
-    setIsGenerating(true);
-    setGenerationStep(0);
-    setGenerationProgress(0);
+    runPipeline('Thumbnail AI', `Rendering 4K Thumbnail: ${overlayText}`, () => {
+      const seed = Math.floor(Math.random() * 1000);
+      const newImageUrl = `https://picsum.photos/seed/${seed}/1280/720`;
+      setCurrentImage(newImageUrl);
 
-    const steps = [
-      'Analyzing YouTube CTR patterns & visual contrast...',
-      'Synthesizing 3D lighting, face model & depth map...',
-      'Applying high-saturation color palette & rim light overlays...',
-      'Rendering 4K thumbnail image with bold typography banner...',
-    ];
+      const newItem: PromptHistoryItem = {
+        id: `hist-${Date.now()}`,
+        prompt,
+        enhancedPrompt: enhancedPrompt || prompt,
+        style: selectedStyle,
+        mood: selectedMood,
+        palette: selectedPalette,
+        aspectRatio: selectedRatio,
+        createdAt: 'Just now',
+        isFavorite: false,
+        generatedImageUrl: newImageUrl,
+        overlayText,
+      };
 
-    const interval = setInterval(() => {
-      setGenerationProgress((prev) => {
-        const next = prev + 3;
-        if (next >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            // Generate a fresh dynamic thumbnail image URL based on selected style seed
-            const seed = Math.floor(Math.random() * 1000);
-            const newImageUrl = `https://picsum.photos/seed/${seed}/1280/720`;
-            setCurrentImage(newImageUrl);
+      setHistory((prev) => [newItem, ...prev]);
 
-            const newItem: PromptHistoryItem = {
-              id: `hist-${Date.now()}`,
-              prompt,
-              enhancedPrompt: enhancedPrompt || prompt,
-              style: selectedStyle,
-              mood: selectedMood,
-              palette: selectedPalette,
-              aspectRatio: selectedRatio,
-              createdAt: 'Just now',
-              isFavorite: false,
-              generatedImageUrl: newImageUrl,
-              overlayText,
-            };
-
-            setHistory((prev) => [newItem, ...prev]);
-            setIsGenerating(false);
-          }, 600);
-          return 100;
-        }
-
-        const step = Math.min(3, Math.floor(next / 25));
-        setGenerationStep(step);
-        return next;
+      addActivity({
+        type: 'thumbnail',
+        title: '✓ 4K Thumbnail Rendered',
+        description: `Synthesized "${overlayText}" thumbnail (+12.8% CTR prediction).`,
+        status: 'completed',
+        aiBadge: 'Vision Model v3.0',
       });
-    }, 70);
+      incrementStats(1, 1.5, 1);
+      showToast(`✓ 4K Thumbnail "${overlayText}" rendered & saved to workspace!`, 'success');
+    });
   };
+
 
   const toggleFavorite = (id: string) => {
     setHistory((prev) =>

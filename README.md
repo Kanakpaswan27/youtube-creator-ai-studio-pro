@@ -4,6 +4,9 @@
 
 ### The Complete AI-Powered Workspace for Modern YouTube Creators
 
+<img width="1600" height="752" alt="image" src="https://github.com/user-attachments/assets/ee0129c2-96ff-4604-bd2a-f0cb69a5246b" />
+
+
 <p align="center">
 
 <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white"/>
